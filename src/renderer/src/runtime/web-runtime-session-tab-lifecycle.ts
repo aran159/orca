@@ -45,6 +45,7 @@ export async function activateWebRuntimeSessionTab(args: {
     (hasLegacyRelayBridgedPane(args.tabId)
       ? useAppStore.getState().terminalLayoutsByTabId?.[args.tabId]?.activeLeafId
       : null)
+  ;((globalThis as { __relayProbe?: unknown[] }).__relayProbe ??= []).push({ at: Date.now(), k: 'web-activate', tabId: args.tabId, leafId, argsLeaf: args.leafId, bridged: isLegacyRelayBridgedTab(args.tabId, leafId), anyBridged: hasLegacyRelayBridgedPane(args.tabId) })
   if (isLegacyRelayBridgedTab(args.tabId, leafId)) {
     // This gesture still supersedes an earlier tab's pending focus, as recording its own would.
     const environmentId = resolveTabEnvironmentId(args.environmentId)

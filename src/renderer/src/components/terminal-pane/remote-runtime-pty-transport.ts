@@ -682,6 +682,7 @@ export function createRemoteRuntimePtyTransport(
     intent: TabActivationIntent,
     timeoutMs?: number
   ): Promise<RuntimeMobileSessionTabsResult> {
+    ;((globalThis as { __relayProbe?: unknown[] }).__relayProbe ??= []).push({ at: Date.now(), k: 'host-activate', hostTabId, leafId, worktree, intent, stack: (new Error().stack ?? '').split('\n').slice(2, 8).join(' | ') })
     return callRuntime<RuntimeMobileSessionTabsResult>(
       'session.tabs.activate',
       {

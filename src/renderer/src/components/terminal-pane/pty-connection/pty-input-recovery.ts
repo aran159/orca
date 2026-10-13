@@ -290,6 +290,7 @@ function withLegacyRelayBridge(session: ConnectPanePtySession, inner: PtyTranspo
         .tabsByWorktree[session.deps.worktreeId]?.find((tab) => tab.id === session.deps.tabId)
         ?.ptyId
   })
+  ;((globalThis as { __relayProbe?: unknown[] }).__relayProbe ??= []).push({ at: Date.now(), k: 'with-bridge', tabId: session.deps.tabId, leafId, ptyId, restoredBound: leafId ? session.deps.restoredPtyIdByLeafId?.[leafId] : undefined, tabPtyId: useAppStore.getState().tabsByWorktree[session.deps.worktreeId]?.find((tab) => tab.id === session.deps.tabId)?.ptyId, panes: window.api?.legacyRelayBridge ? 'api' : 'no-api' })
   session.legacyRelayBridgePtyId = ptyId
   return ptyId ? createLegacyRelayBridgeTransport(ptyId, inner) : inner
 }

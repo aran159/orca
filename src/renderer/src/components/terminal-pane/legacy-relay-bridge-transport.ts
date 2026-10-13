@@ -187,6 +187,7 @@ export function createLegacyRelayBridgeTransport(ptyId: string, inner: PtyTransp
     retryRecovery: () => (bridged() ? false : (inner.retryRecovery?.() ?? false)),
     setOutputPaused: (paused) => (bridged() ? false : (inner.setOutputPaused?.(paused) ?? false)),
     connect: (options) => {
+      ;((globalThis as { __relayProbe?: unknown[] }).__relayProbe ??= []).push({ at: Date.now(), k: 'bridge-connect', ptyId, sessionId: options.sessionId, stack: (new Error().stack ?? '').split('\n').slice(2, 8).join(' | ') })
       if (options.sessionId === ptyId) {
         return connectBridged(options.callbacks)
       }
@@ -195,6 +196,7 @@ export function createLegacyRelayBridgeTransport(ptyId: string, inner: PtyTransp
       return inner.connect(options)
     },
     attach: (options) => {
+      ;((globalThis as { __relayProbe?: unknown[] }).__relayProbe ??= []).push({ at: Date.now(), k: 'bridge-attach', ptyId, existingPtyId: options.existingPtyId, stack: (new Error().stack ?? '').split('\n').slice(2, 8).join(' | ') })
       if (options.existingPtyId === ptyId) {
         void connectBridged(options.callbacks)
         return

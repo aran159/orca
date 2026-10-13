@@ -384,6 +384,12 @@ test('terminals a 1.4.224 relay keeps running stay usable in their old tabs afte
     ).toBe('present')
   } finally {
     if (app) {
+      for (const window of app.windows()) {
+        const probe = await window
+          .evaluate(() => (globalThis as unknown as { __relayProbe?: unknown[] }).__relayProbe ?? [])
+          .catch((error: unknown) => String(error))
+        console.log(`[relay-probe] ${JSON.stringify(probe)}`)
+      }
       await session.close(app)
     }
     await session.dispose()
