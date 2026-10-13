@@ -97,7 +97,11 @@ function bridgeFor(targetId: string): LegacyRelayTargetBridge | null {
           )
       }),
     endpointExited: (endpoint) => posixEndpointExited(connection(), endpoint),
-    onPanesChanged: () => installed.onPanesChanged(legacyRelayBridgedPanes()),
+    onPanesChanged: () => {
+      const listed = legacyRelayBridgedPanes()
+      console.warn(`[ssh] [relay-probe] ${Date.now()} panes ${JSON.stringify(listed.map((pane) => `${pane.tabId}/${pane.leafId}/${pane.state}`))}`)
+      installed.onPanesChanged(listed)
+    },
     onData: installed.onData,
     onExit: installed.onExit,
     onTerminalExited: () => installed.report(targetId, 'terminal_exited', 0)
@@ -128,6 +132,7 @@ async function posixEndpointExited(
  * so the panes they still run are known before the renderer remounts them on the new server.
  */
 export async function startLegacyRelayBridge(targetId: string): Promise<void> {
+  console.warn(`[ssh] [relay-probe] ${Date.now()} start ${targetId} bridgeable=${hasBridgeableLeases(targetId)} existing=${bridges.has(targetId)}`)
   if (!hasBridgeableLeases(targetId)) {
     return
   }
@@ -152,6 +157,7 @@ export async function startLegacyRelayBridge(targetId: string): Promise<void> {
 }
 
 export function stopLegacyRelayBridge(targetId: string): void {
+  console.warn(`[ssh] [relay-probe] ${Date.now()} stop ${targetId} existing=${bridges.has(targetId)}`)
   const bridge = bridges.get(targetId)
   if (bridge) {
     bridges.delete(targetId)

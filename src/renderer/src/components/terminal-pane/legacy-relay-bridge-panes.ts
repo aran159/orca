@@ -23,6 +23,7 @@ function ensureSubscribed(): void {
   subscribed = true
   const apply = (next: LegacyRelayBridgedPane[]): void => {
     panes = Array.isArray(next) ? next : []
+    ;((globalThis as { __relayProbe?: unknown[] }).__relayProbe ??= []).push({ at: Date.now(), k: 'panes-apply', panes: (Array.isArray(next) ? next : []).map((pane) => `${pane.tabId}/${pane.leafId}/${pane.state}`) })
     for (const ptyId of claims.keys()) {
       if (!panes.some((pane) => pane.ptyId === ptyId)) {
         claims.delete(ptyId)
@@ -53,6 +54,7 @@ function bridgedPanesInTab(
   // A tab mirrored from the managed server is `web-terminal-<tab>` or `web-terminal-<tab::leaf>`;
   // the lease names the relay-era tab and leaf it carried over.
   const [hostTabId, hostLeafId] = toHostSessionTabId(tabId).split(HOST_TERMINAL_SURFACE_SEPARATOR)
+  ;((globalThis as { __relayProbe?: unknown[] }).__relayProbe ??= []).push({ at: Date.now(), k: 'panes-read', tabId, hostTabId, n: panes.length, subscribed })
   return {
     inTab: panes.filter((pane) => pane.tabId === hostTabId),
     leaf: hostLeafId ?? leafId ?? null
